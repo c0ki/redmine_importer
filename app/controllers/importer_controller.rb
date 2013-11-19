@@ -48,10 +48,8 @@ class ImporterController < ApplicationController
     i = 0
     @samples = []
     
-    CSV.new(iip.csv_data, {:headers=>true,
-                           :encoding=>iip.encoding,
-                           :quote_char=>iip.quote_char,
-                           :col_sep=>iip.col_sep}).each do |row|
+    FasterCSV.new(iip.csv_data, {:headers=>true,
+    :encoding=>iip.encoding, :quote_char=>iip.quote_char, :col_sep=>iip.col_sep}).each do |row|
       @samples[i] = row
      
       i += 1
@@ -76,7 +74,7 @@ class ImporterController < ApplicationController
     IssueRelation::TYPES.each_pair do |rtype, rinfo|
       @attrs.push([l_or_humanize(rinfo[:name]),rtype])
     end
-    @attrs.sort!
+    @attrs.sort!{|x,y| x.to_s <=> y.to_s}
   end
   
   # Returns the issue object associated with the given value of the given attribute.
@@ -224,10 +222,8 @@ class ImporterController < ApplicationController
       return
     end
 
-    CSV.new(iip.csv_data, {:headers=>true,
-                           :encoding=>iip.encoding,
-                           :quote_char=>iip.quote_char,
-                           :col_sep=>iip.col_sep}).each do |row|
+    FasterCSV.new(iip.csv_data, {:headers=>true, :encoding=>iip.encoding, 
+        :quote_char=>iip.quote_char, :col_sep=>iip.col_sep}).each do |row|
 
       project = Project.find_by_name(row[attrs_map["project"]])
       if !project
