@@ -6,6 +6,7 @@ fr:
   label_upload_encoding: "Encodage:"
   label_upload_splitter: "Séparateur:"
   label_upload_wrapper: "Identificateur de texte:"
+  label_upload_date_format: "Format des dates:"
   
   label_match_columns: "Correspondance des colonnes"
   label_match_select: "Choisir le champ correspondant à chaque colonne:"

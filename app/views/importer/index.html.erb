@@ -18,6 +18,13 @@
       <p><label><%= l(:label_upload_wrapper) %></label>
         <%= text_field_tag "wrapper", '"', {:size => 3, :maxlength => 1} %></p>
 
+      <p><label><%= l(:label_upload_date_format) %></label>
+        <%= select_tag "date_format", "<option value=\"%Y-%m-%d\">yyyy-mm-dd (2013-10-25)</option>
+                                <option value=\"%d-%m-%Y\">dd-mm-yyyy (25-10-2013)</option>
+                                <option value=\"%m-%d-%Y\">mm-dd-yyyy (10-25-2013)</option>
+                                <option value=\"%d/%m/%Y\">dd/mm/yyyy (25/10/2013)</option>
+                                <option value=\"%m/%d/%Y\">mm/dd/yyyy (10/25/2013)</option>
+                                <option value=\"\">???</option>".html_safe %>
     </fieldset>
 
     <%= submit_tag l(:button_upload) %>

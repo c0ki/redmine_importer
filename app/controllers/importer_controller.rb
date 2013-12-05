@@ -39,6 +39,7 @@ class ImporterController < ApplicationController
     iip.quote_char = params[:wrapper]
     iip.col_sep = params[:splitter]
     iip.encoding = params[:encoding]
+    iip.date_format = params[:date_format]
     iip.created = Time.new
     iip.csv_data = params[:file].read
     iip.save
@@ -348,8 +349,10 @@ class ImporterController < ApplicationController
       # optional attributes
       issue.description = row[attrs_map["description"]] || issue.description
       issue.category_id = category != nil ? category.id : issue.category_id
-      issue.start_date = row[attrs_map["start_date"]].blank? ? nil : Date.parse(row[attrs_map["start_date"]])
-      issue.due_date = row[attrs_map["due_date"]].blank? ? nil : Date.parse(row[attrs_map["due_date"]])
+      issue.start_date = row[attrs_map["start_date"]].blank? ? nil :
+          iip.date_format.blank? ? Date.parse(row[attrs_map["start_date"]]) : Date.strptime(row[attrs_map["start_date"]], iip.date_format)
+      issue.due_date = row[attrs_map["due_date"]].blank? ? nil :
+          iip.date_format.blank? ? Date.parse(row[attrs_map["due_date"]]) : Date.strptime(row[attrs_map["due_date"]], iip.date_format)
       issue.assigned_to_id = assigned_to != nil ? assigned_to.id : issue.assigned_to_id
       issue.fixed_version_id = fixed_version_id != nil ? fixed_version_id : issue.fixed_version_id
       issue.done_ratio = row[attrs_map["done_ratio"]] || issue.done_ratio
