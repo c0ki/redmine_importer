@@ -124,22 +124,26 @@ class ImporterController < ApplicationController
   end
 
   # Returns the id for the given user or raises RecordNotFound
-  # Implements a cache of users based on login name
-  def user_for_login!(login)
-    begin
-      if !@user_by_login.has_key?(login)
-        @user_by_login[login] = User.find_by_login!(login)
+  # Implements a cache of users based on name (login, firstname+lastname, lastname+firstname)
+  def user_for_name!(name)
+    if !@user_by_name.has_key?(name.downcase)
+      begin
+        @user_by_name[name.downcase] = User.find_by_login!(name)
+      rescue ActiveRecord::RecordNotFound
+        @user_by_name[name.downcase] = User.where("CONCAT_WS(' ', LOWER(firstname), LOWER(lastname)) = ?", name.downcase).first
+        @user_by_name[name.downcase] = User.where("CONCAT_WS(' ', LOWER(lastname), LOWER(firstname)) = ?", name.downcase).first if @user_by_name[name.downcase].nil?
+        if @user_by_name[name.downcase].nil?
+          @unfound_class = "User"
+          @unfound_key = name
+          raise
+        end
       end
-      @user_by_login[login]
-    rescue ActiveRecord::RecordNotFound
-      @unfound_class = "User"
-      @unfound_key = login
-      raise
+      @user_by_name[name.downcase]
     end
   end
 
-  def user_id_for_login!(login)
-    user = user_for_login!(login)
+  def user_id_for_name!(name)
+    user = user_for_name!(name)
     user ? user.id : nil
   end
 
@@ -175,8 +179,8 @@ class ImporterController < ApplicationController
     # This is a cache of previously inserted issues indexed by the value
     # the user provided in the unique column
     @issue_by_unique_attr = Hash.new
-    # Cache of user id by login
-    @user_by_login = Hash.new
+    # Cache of user id by name
+    @user_by_name = Hash.new
     # Cache of Version by name
     @version_id_by_name = Hash.new
 
@@ -247,7 +251,7 @@ class ImporterController < ApplicationController
 
         tracker = Tracker.find_by_name(row[attrs_map["tracker"]])
         status = IssueStatus.find_by_name(row[attrs_map["status"]])
-        author = attrs_map["author"] ? user_for_login!(row[attrs_map["author"]]) : User.current
+        author = attrs_map["author"] ? user_for_name!(row[attrs_map["author"]]) : User.current
         priority = Enumeration.find_by_name(row[attrs_map["priority"]])
         category_name = row[attrs_map["category"]]
         category = IssueCategory.find_by_project_id_and_name(project.id, category_name)
@@ -255,7 +259,7 @@ class ImporterController < ApplicationController
           category = project.issue_categories.build(:name => category_name)
           category.save
         end
-        assigned_to = row[attrs_map["assigned_to"]] != nil ? user_for_login!(row[attrs_map["assigned_to"]]) : nil
+        assigned_to = row[attrs_map["assigned_to"]] != nil ? user_for_name!(row[attrs_map["assigned_to"]]) : nil
         fixed_version_name = row[attrs_map["fixed_version"]].blank? ? nil : row[attrs_map["fixed_version"]]
         fixed_version_id = fixed_version_name ? version_id_for_name!(project, fixed_version_name, add_versions) : nil
         watchers = row[attrs_map["watchers"]]
@@ -379,7 +383,7 @@ class ImporterController < ApplicationController
         if value = row[attrs_map[cf.name]].blank? ? nil : row[attrs_map[cf.name]]
           begin
             if cf.field_format == 'user'
-              value = user_id_for_login!(value).to_s
+              value = user_id_for_name!(value).to_s
             elsif cf.field_format == 'version'
               value = version_id_for_name!(project, value, add_versions).to_s
             elsif cf.field_format == 'date'
@@ -405,7 +409,7 @@ class ImporterController < ApplicationController
         addable_watcher_users = issue.addable_watcher_users
         watchers.split(',').each do |watcher|
           begin
-            watcher_user = user_id_for_login!(watcher)
+            watcher_user = user_id_for_name!(watcher)
             if issue.watcher_users.include?(watcher_user)
               next
             end
