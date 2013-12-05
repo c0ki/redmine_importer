@@ -1,4 +1,6 @@
 require 'nkf'
+require 'iconv'
+
 class ImportInProgress < ActiveRecord::Base
   unloadable
   belongs_to :user
@@ -9,22 +11,24 @@ class ImportInProgress < ActiveRecord::Base
   private
   def encode_csv_data
     return if self.csv_data.blank?
-    
-    self.csv_data = self.csv_data
-    # 入力文字コード
-    encode = case self.encoding
-    when "U"
-      "-W"
-    when "EUC"
-      "-E"
-    when "S"
-      "-S"
-    when "N"
-      ""
-    else
-      ""
+
+    if self.encoding == 'ISO'
+      converter = Iconv.new('UTF-8', 'iso-8859-1')
+      self.csv_data = converter.iconv(self.csv_data)
+      self.encoding = 'U';
     end
-    
-    self.csv_data = NKF.nkf("#{encode} -w", self.csv_data)
+
+    nkf_encode = nil
+
+    case self.encoding
+      when "U"
+        nkf_encode = "-W"
+      when "EUC"
+        nkf_encode = "-E"
+      when "S"
+        nkf_encode = "-S"
+    end
+
+    self.csv_data = NKF.nkf("#{nkf_encode} -w", self.csv_data) if nkf_encode.nil?
   end
 end
