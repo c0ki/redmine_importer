@@ -1,0 +1,40 @@
+fr:
+  label_import: "Import"
+  label_issue_importer: "Importer des demandes"
+  label_upload_notice: "Choisir le fichier CSV à importer. Le fichier d'import doit avoir une ligne d'entête. Taille maximum 4MB."
+  label_upload_format: "Options du fichier"
+  label_upload_encoding: "Encodage:"
+  label_upload_splitter: "Séparateur:"
+  label_upload_wrapper: "Identificateur de texte:"
+  
+  label_match_columns: "Correspondance des colonnes"
+  label_match_select: "Choisir le champ correspondant à chaque colonne:"
+  label_import_rule: "Règles d'import"
+  label_default_tracker: "Tracker par défaut:"
+  label_unique_field: "Sélectionner la colonne ayant des valeurs uniques (requise pour la mise à jour des demandes existantes et pour l'import des liaisons):"
+  label_importer_send_emails: "Envoyer les emails de notification"
+  label_importer_add_categories: "Ajouter automatiquement les catégories"
+  label_importer_add_versions: "Ajouter automatiquement les versions"
+  label_update_issue: "Mettre à jour les demandes existantes"
+  label_journal_field: "Sélectionner la colonne à utiliser pour les notes:"
+  label_update_other_project: "Permettre la mise à jour de demandes d'un autre projet"
+  label_ignore_non_exist: "Ignorer les demandes inexistantes"
+  label_toplines: "Rappel des premières lignes du fichier %{value}:"
+
+  label_import_result: "Résultat de l'import"
+  label_result_notice: "%{handle_count} demandes traitées.  %{success_count} demandes importées avec succès."
+  label_result_projects: "Projets impactés:"
+  label_result_issues: "%{count} demandes"
+  label_result_failed: "%{count} lignes en erreur:"
+
+  option_ignore: "--"
+
+  button_upload: "Import du fichier"
+  button_submit: "Soumettre"
+
+  text_rmi_specify_unique_field_for_update: "Un champ unique doit être spécifié pour permettre la mise à jour des demandes"
+  text_rmi_specify_unique_field_for_column: "Un champ unique doit être spécifié car la colonne '%{column}' doit pointer sur une autre demande"
+
+  label_load_rules: "Load saved rules"
+  label_rule_name: "Input rule name"
+  button_save_rules_and_submit: "Save match rules and submit"
