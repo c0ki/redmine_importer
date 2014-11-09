@@ -21,3 +21,7 @@ The other localizations are up to date, but the zh is a little bit behind.
 If anyone could update it, it would be appreciated.
 
 User documentation at https://github.com/leovitch/redmine_importer/wiki.
+
+
+TODO
+Gestion des dates pour les champs personnalisés
